@@ -149,11 +149,17 @@ int foo_cache_lookup(struct foo_cache *cache, char *key, void *result)
 	if (rv)
 		return rv;
 
+    /* The element is found in the hash using a string key and stored in tmp */
 	HASH_FIND_STR(cache->entries, key, tmp);
 	if (tmp) {
+        /* The length of tmp's key is stored */
 		size_t key_len = strnlen(tmp->key, KEY_MAX_LENGTH);
+        /* tmp is deleted from the hash */
 		HASH_DELETE(hh, cache->entries, tmp);
+        /* tmp is added back into the hash to maintain LRU 
+           the LRU item remains at the head of uthash's doubly linked list */
 		HASH_ADD_KEYPTR(hh, cache->entries, tmp->key, key_len, tmp);
+        /* tmp's data is returned */
 		*dirty_hack = tmp->data;
 	} else {
 		*dirty_hack = result = NULL;
@@ -194,10 +200,15 @@ int foo_cache_insert(struct foo_cache *cache, char *key, void *data)
 	entry->key = key;
 	entry->data = data;
 	key_len = strnlen(entry->key, KEY_MAX_LENGTH);
+    /* Always insert the (key, value) pair passed in */
 	HASH_ADD_KEYPTR(hh, cache->entries, entry->key, key_len, entry);
-
+    
+    /* If the size of the hash has been exceeded, delete the least-recetly-used
+       entry */
 	if (HASH_COUNT(cache->entries) >= cache->max_entries) {
+        /* Beging iterating using the internal doubly-linked list */
 		HASH_ITER(hh, cache->entries, entry, tmp_entry) {
+            /* Delete the first entry in the linked-list (the LRU) */
 			HASH_DELETE(hh, cache->entries, entry);
 			if (cache->free_cb)
 				cache->free_cb(entry->data);
@@ -205,6 +216,7 @@ int foo_cache_insert(struct foo_cache *cache, char *key, void *data)
 				free(entry->data);
 			/* free(key->key) if data has been copied */
 			free(entry);
+            /* Stop iterating so that only one item is deleted */
 			break;
 		}
 	}
