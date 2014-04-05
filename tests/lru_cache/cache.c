@@ -149,17 +149,17 @@ int foo_cache_lookup(struct foo_cache *cache, char *key, void *result)
 	if (rv)
 		return rv;
 
-    /* The element is found in the hash using a string key and stored in tmp */
+    /* The element is found in the hash */
 	HASH_FIND_STR(cache->entries, key, tmp);
 	if (tmp) {
-        /* The length of tmp's key is stored */
 		size_t key_len = strnlen(tmp->key, KEY_MAX_LENGTH);
-        /* tmp is deleted from the hash */
+        /* The element is deleted from the hash */
 		HASH_DELETE(hh, cache->entries, tmp);
-        /* tmp is added back into the hash to maintain LRU 
-           the LRU item remains at the head of uthash's doubly linked list */
+        /* The element is added back into the hash to maintain LRU at the tail
+           of the uthash's doubly-linked list. The LRU item remains at the head
+           of uthash's doubly linked list. */
 		HASH_ADD_KEYPTR(hh, cache->entries, tmp->key, key_len, tmp);
-        /* tmp's data is returned */
+        /* The element's data is returned */
 		*dirty_hack = tmp->data;
 	} else {
 		*dirty_hack = result = NULL;
