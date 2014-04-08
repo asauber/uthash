@@ -89,7 +89,7 @@ void *consumer(void *arg)
 
 		printf("HIT\n");
 		printf("key: %s\n", result->key);
-		printf("key : %s\n", result->value);
+		printf("value : %s\n", result->value);
 	} while (!stop);
 
 out:
