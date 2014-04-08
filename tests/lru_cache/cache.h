@@ -20,6 +20,8 @@
 #ifndef _CACHE_
 #define _CACHE_
 
+#define KEY_MAX_LENGTH		32
+
 struct foo_cache;
 
 extern int foo_cache_create(struct foo_cache **dst, const size_t capacity,

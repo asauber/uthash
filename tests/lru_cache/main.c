@@ -49,8 +49,8 @@ void *consumer(void *arg)
 {
 	struct foo_cache *cache = arg;
 	struct key_record *result = NULL;
-	char *buffer = malloc(64);
-	char key[33];
+	char *buffer = malloc(KEY_MAX_LENGTH + 1);
+	char key[KEY_MAX_LENGTH + 1];
 	int stop = 0;
 
 	if (!buffer)
@@ -61,7 +61,7 @@ void *consumer(void *arg)
 	printf("\n\n");
 
 	do {
-		memset(key, 0, 64);
+		memset(key, 0, KEY_MAX_LENGTH + 1);
 		result = NULL;
 
 		printf("Enter key for lookup: ");

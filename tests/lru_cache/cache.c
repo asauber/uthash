@@ -31,7 +31,6 @@ struct foo_cache_entry {
 	void *data; /**<Payload */
 	UT_hash_handle hh; /**<Hash Handle for uthash */
 };
-#define KEY_MAX_LENGTH		32
 
 /**
  * A cache object
