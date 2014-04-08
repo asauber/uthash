@@ -22,6 +22,9 @@ void *producer(void *arg)
 	struct foo_cache *cache = arg;
 	int i;
 
+    printf("Inserting %d entries into a cache of size %d\n",
+        MAX_RANDOM_ENTRIES, MAX_RANDOM_ENTRIES / 2);
+
 	for (i = 0; i < MAX_RANDOM_ENTRIES; i++) {
 		struct key_record *entry = NULL;
 		if (generate_random_entry(&entry)) {
@@ -33,8 +36,8 @@ void *producer(void *arg)
 		printf("  key: %s\n", entry->key);
 		printf("   Key: %s\n", entry->value);
 #else
-		printf("inserted %s (%d)\n", entry->key,
-		       (int)strlen(entry->key));
+		printf("%2d: inserted %s (%d)\n", i, entry->key,
+            (int)strlen(entry->key));
 #endif
 		if (foo_cache_insert(cache, entry->key, entry)) {
 			fprintf(stderr, "foo_cache_insert() failed\n");
@@ -64,7 +67,7 @@ void *consumer(void *arg)
 		memset(key, 0, KEY_MAX_LENGTH + 1);
 		result = NULL;
 
-		printf("Enter key for lookup: ");
+		printf("Enter key for lookup (or \"exit\" to exit): ");
 		fgets(buffer, sizeof(key), stdin);
 		sscanf(buffer, "%s\n", key);
 		/* read '\n' from stdin */
